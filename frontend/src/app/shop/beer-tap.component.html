@@ -19,7 +19,7 @@
             {{orders[0].orderItems[0].options[0]}}
         </h3>
         <qrcode *ngIf="orders[0].paymentRequest"
-                [qrdata]="orders[0].paymentRequest"
+                [qrdata]="orders[0].paymentRequest.toUpperCase()"
                 [size]="qrCodeSize"
                 level="L"
                 [colordark]="'#1e5a96'"
@@ -41,7 +41,7 @@
             {{orders[i].orderItems[0].options[0]}}
         </h3>
         <qrcode *ngIf="orders[i].paymentRequest"
-                [qrdata]="orders[i].paymentRequest"
+                [qrdata]="orders[i].paymentRequest.toUpperCase()"
                 [size]="qrCodeSize"
                 level="L"
                 [colordark]="'#1e5a96'"
