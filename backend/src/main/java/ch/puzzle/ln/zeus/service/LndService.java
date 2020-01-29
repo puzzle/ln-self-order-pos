@@ -3,11 +3,11 @@ package ch.puzzle.ln.zeus.service;
 import ch.puzzle.ln.zeus.config.ApplicationProperties;
 import ch.puzzle.ln.zeus.config.ApplicationProperties.Lnd;
 import io.grpc.Status;
-import io.grpc.netty.GrpcSslContexts;
+import io.grpc.netty.shaded.io.grpc.netty.GrpcSslContexts;
+import io.grpc.netty.shaded.io.netty.handler.ssl.SslContext;
+import io.grpc.netty.shaded.io.netty.handler.ssl.SslContextBuilder;
+import io.grpc.netty.shaded.io.netty.handler.ssl.SslProvider;
 import io.grpc.stub.StreamObserver;
-import io.netty.handler.ssl.SslContext;
-import io.netty.handler.ssl.SslContextBuilder;
-import io.netty.handler.ssl.SslProvider;
 import org.lightningj.lnd.wrapper.*;
 import org.lightningj.lnd.wrapper.message.*;
 import org.slf4j.Logger;
@@ -116,12 +116,14 @@ public class LndService implements StreamObserver<org.lightningj.lnd.wrapper.mes
 
     public NodeInfo getNodeInfo(String nodeId) throws IOException, StatusException, ValidationException {
         LOG.info("getNodeInfo called with nodeId={}", nodeId);
+        NodeInfoRequest nodeInfoRequest = new NodeInfoRequest();
+        nodeInfoRequest.setPubKey(nodeId);
         try {
-            return getSyncReadonlyApi().getNodeInfo(nodeId);
+            return getSyncReadonlyApi().getNodeInfo(nodeInfoRequest);
         } catch (StatusException | ValidationException | IOException e) {
             LOG.warn("getNodeInfo call failed, retrying with fresh api");
             resetSyncReadOnlyApi();
-            return getSyncReadonlyApi().getNodeInfo(nodeId);
+            return getSyncReadonlyApi().getNodeInfo(nodeInfoRequest);
         }
     }
 
