@@ -259,13 +259,17 @@ public class InvoiceService implements InvoiceHandler {
             dbInvoice.setPreimageHex(invoice.getRPreimage() != null ? bytesToHex(invoice.getRPreimage()) : null);
             dbInvoice.setSettleDate(unixTimestampToInstant(invoice.getSettleDate()));
             dbInvoice = invoiceRepository.save(dbInvoice);
-            eventPublisher.publishEvent(new InvoiceEvent(this, invoiceMapper.toDto(dbInvoice), !wasSettledPreviously));
+            sendEvent(invoiceMapper.toDto(dbInvoice), !wasSettledPreviously);
 
             if (invoice.getSettled() && !wasSettledPreviously) {
                 pendingInvoices.remove(hashHex);
                 paidInvoices.increment();
             }
         }
+    }
+
+    public void sendEvent(InvoiceDTO invoice, boolean firstSettleEvent) {
+        eventPublisher.publishEvent(new InvoiceEvent(this, invoice, firstSettleEvent));
     }
 
     public static Double calculateTotalChf(Invoice invoice, Shop shop) {

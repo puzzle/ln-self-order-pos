@@ -3,6 +3,7 @@ package ch.puzzle.ln.zeus.service;
 import ch.puzzle.ln.zeus.config.ApplicationProperties;
 import ch.puzzle.ln.zeus.config.ApplicationProperties.Mail;
 import ch.puzzle.ln.zeus.config.ApplicationProperties.Shop;
+import ch.puzzle.ln.zeus.domain.enums.InvoiceType;
 import ch.puzzle.ln.zeus.service.dto.InvoiceDTO;
 import ch.puzzle.ln.zeus.service.util.ConvertUtil;
 import io.github.jhipster.config.JHipsterProperties;
@@ -122,7 +123,11 @@ public class MailService {
         data.put("taxBase", ConvertUtil.formatNumber(taxMultiplier * 100, 1));
         data.put("taxAmount", ConvertUtil.formatCurrency(ticker, totalChf * taxMultiplier));
         data.put("total", ConvertUtil.formatCurrency(ticker, totalChf));
-        data.put("paymentText", mail.getPaymentText());
+        if (invoice.getInvoiceType() == InvoiceType.DIRTY_FIAT) {
+            data.put("paymentText", "NOT PAID! Cash/card payment upon pick-up requested.");
+        } else {
+            data.put("paymentText", mail.getPaymentText());
+        }
         if (invoice.getPickupDelayMinutes() != null && invoice.getPickupDelayMinutes() == 0) {
             data.put("pickup", "NOW! (" + formatTime(invoice.getSettleDate()) + ")");
         } else if (invoice.getPickupDelayMinutes() != null) {

@@ -1,6 +1,7 @@
 package ch.puzzle.ln.zeus.web.rest;
 
 import ch.puzzle.ln.zeus.domain.Invoice;
+import ch.puzzle.ln.zeus.domain.enums.InvoiceType;
 import ch.puzzle.ln.zeus.security.AuthoritiesConstants;
 import ch.puzzle.ln.zeus.service.InvoiceService;
 import ch.puzzle.ln.zeus.service.dto.InvoiceDTO;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.net.URI;
+import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 
@@ -60,6 +62,31 @@ public class InvoiceResource {
         Invoice invoice = invoiceService.validateAndMapDonation(donation);
         invoiceService.generateLndInvoice(invoice);
         InvoiceDTO result = invoiceService.saveGenerated(invoice);
+
+        try {
+            return ResponseEntity.created(new URI("/api/invoices/" + result.getId()))
+                .headers(HeaderUtil.createEntityCreationAlert(ENTITY_NAME, result.getId().toString()))
+                .body(result);
+        } catch (Exception e) {
+            throw new InternalServerErrorException(e.getMessage());
+        }
+    }
+
+    @PostMapping("/invoice/dirtyfiat")
+    public ResponseEntity<InvoiceDTO> createDirtyFiatInvoice(@Valid @RequestBody OrderVM order) {
+        LOG.debug("REST request to save dirty fiat Order : {}", order);
+        Invoice invoice = invoiceService.validateAndMapOrder(order);
+        invoiceService.calculatePrice(invoice);
+        invoice.setAmount(0L);
+        invoice.setExchangeRate(0.0d);
+        invoice.setSettled(false);
+        invoice.setHashHex("00000000");
+        invoice.setPreimageHex("00000000");
+        invoice.setInvoiceType(InvoiceType.DIRTY_FIAT);
+        invoice.setCreationDate(Instant.now());
+        invoice.setSettleDate(Instant.now());
+        InvoiceDTO result = invoiceService.saveGenerated(invoice);
+        invoiceService.sendEvent(result, true);
 
         try {
             return ResponseEntity.created(new URI("/api/invoices/" + result.getId()))
