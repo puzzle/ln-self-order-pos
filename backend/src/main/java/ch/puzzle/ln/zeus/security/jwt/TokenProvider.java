@@ -93,7 +93,7 @@ public class TokenProvider {
         try {
             Jwts.parser().setSigningKey(secretKey).parseClaimsJws(authToken);
             return true;
-        } catch (SignatureException e) {
+        } catch (SecurityException e) {
             log.info("Invalid JWT signature.");
             log.trace("Invalid JWT signature trace: {}", e);
         } catch (MalformedJwtException e) {

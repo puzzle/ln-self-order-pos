@@ -129,7 +129,7 @@ dependencies {
     compile "io.springfox:springfox-bean-validators"
     compile "org.postgresql:postgresql"
     compile "org.mapstruct:mapstruct-jdk8:${mapstruct_version}"
-    compile "org.lightningj:lightningj:0.9.0-Beta"
+    compile "org.lightningj:lightningj:0.10.0-Beta"
     compile "io.netty:netty-tcnative-boringssl-static:2.0.25.Final"
     compile "org.twitter4j:twitter4j-core:4.0.7"
     compile 'io.sentry:sentry-logback:1.7.16'

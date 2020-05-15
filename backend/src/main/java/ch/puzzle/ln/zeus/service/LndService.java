@@ -8,6 +8,7 @@ import io.grpc.netty.shaded.io.netty.handler.ssl.SslContext;
 import io.grpc.netty.shaded.io.netty.handler.ssl.SslContextBuilder;
 import io.grpc.netty.shaded.io.netty.handler.ssl.SslProvider;
 import io.grpc.stub.StreamObserver;
+import org.lightningj.lnd.proto.LightningApi;
 import org.lightningj.lnd.wrapper.*;
 import org.lightningj.lnd.wrapper.message.*;
 import org.slf4j.Logger;
@@ -105,12 +106,17 @@ public class LndService implements StreamObserver<org.lightningj.lnd.wrapper.mes
 
     public ListChannelsResponse getChannels() throws IOException, StatusException, ValidationException {
         LOG.info("getChannels called");
+        ListChannelsRequest listChannelsRequest = new ListChannelsRequest();
+        listChannelsRequest.setActiveOnly(true);
+        listChannelsRequest.setInactiveOnly(false);
+        listChannelsRequest.setPublicOnly(true);
+        listChannelsRequest.setPrivateOnly(false);
         try {
-            return getSyncReadonlyApi().listChannels(true, false, true, false);
+            return getSyncReadonlyApi().listChannels(listChannelsRequest);
         } catch (StatusException | ValidationException | IOException e) {
             LOG.warn("getChannels call failed, retrying with fresh api");
             resetSyncReadOnlyApi();
-            return getSyncReadonlyApi().listChannels(true, false, true, false);
+            return getSyncReadonlyApi().listChannels(listChannelsRequest);
         }
     }
 
