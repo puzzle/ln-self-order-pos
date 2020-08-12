@@ -24,7 +24,7 @@
         "angularx-qrcode": "^1.2.2",
         "bootstrap": "4.3.1",
         "core-js": "2.6.5",
-        "jquery": "^3.4.1",
+        "jquery": "^3.5.0",
         "light-it-up": "^1.0.0",
         "lodash": "^4.17.19",
         "moment": "2.24.0",
