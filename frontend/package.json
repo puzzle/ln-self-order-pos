@@ -26,7 +26,7 @@
         "core-js": "2.6.5",
         "jquery": "^3.5.0",
         "light-it-up": "^1.0.0",
-        "lodash": "^4.17.19",
+        "lodash": "^4.17.21",
         "moment": "2.24.0",
         "ng-jhipster": "0.9.3",
         "ngx-cookie": "4.0.2",
